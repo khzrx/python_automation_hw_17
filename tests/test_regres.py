@@ -1,6 +1,5 @@
 import requests
 import jsonschema
-
 from tests import schemas
 
 BASE_URL = 'https://reqres.in'
@@ -14,7 +13,7 @@ SIGN_HEADER = {'x-api-key': 'reqres-free-v1'}
 def test_users_get():
     endpoint = '/api/users/2'
 
-    response = requests.get(BASE_URL + endpoint)
+    response = requests.get(BASE_URL + endpoint, headers=SIGN_HEADER)
 
     assert response.status_code == 200
 
@@ -65,7 +64,7 @@ def test_single_user_has_current_data():
         'avatar': 'https://reqres.in/img/faces/2-image.jpg'
     }
 
-    response = requests.get(BASE_URL + endpoint)
+    response = requests.get(BASE_URL + endpoint, headers=SIGN_HEADER)
 
     assert response.status_code == 200
     assert response.json()['data'] == user_data
@@ -78,7 +77,7 @@ def test_single_user_has_current_support():
         'text': 'Tired of writing endless social media content? Let Content Caddy generate it for you.'
     }
 
-    response = requests.get(BASE_URL + endpoint)
+    response = requests.get(BASE_URL + endpoint, headers=SIGN_HEADER)
 
     assert response.status_code == 200
     assert response.json()['support'] == support_data
@@ -95,13 +94,16 @@ def test_single_user_invalid_id():
 
 def test_single_user_invalid_id_unauthorized():
     endpoint = '/api/users/999'
+    user_data = {
+        "name": "morpheus",
+        "job": "zion resident"
+    }
 
-    response = requests.get(BASE_URL + endpoint)
+    response = requests.put(BASE_URL + endpoint, data=user_data)
 
     assert response.status_code == 401
     assert response.json() == {
-        'error': 'Missing API key.',
-        'how_to_get_one': 'https://reqres.in/signup'
+        'error': 'Missing API key'
     }
 
 
@@ -111,15 +113,19 @@ def test_single_user_invalid_id_unauthorized():
 def test_single_user_validate_schema():
     endpoint = '/api/users/2'
 
-    response = requests.get(BASE_URL + endpoint)
+    response = requests.get(BASE_URL + endpoint, headers=SIGN_HEADER)
 
     jsonschema.validate(response.json(), schemas.single_user)
 
 
-def test_single_user_unauthorized_validate_schema():
-    endpoint = '/api/users/999'
+def test_post_user_unauthorized_validate_schema():
+    endpoint = '/api/users'
+    payload = {
+        'name': 'morpheus',
+        'job': 'leader'
+    }
 
-    response = requests.get(BASE_URL + endpoint)
+    response = requests.post(BASE_URL + endpoint, data=payload)
 
     jsonschema.validate(response.json(), schemas.unauthorized_error)
 

@@ -52,20 +52,16 @@ single_user = {
 }
 
 unauthorized_error = {
-    "$schema": "http://json-schema.org/draft-04/schema#",
-    "type": "object",
-    "properties": {
-        "error": {
-            "type": "string"
-        },
-        "how_to_get_one": {
-            "type": "string"
-        }
-    },
-    "required": [
-        "error",
-        "how_to_get_one"
-    ]
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "error": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "error"
+  ]
 }
 
 users_post = {
